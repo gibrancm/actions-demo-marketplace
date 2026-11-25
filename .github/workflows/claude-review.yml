@@ -40,5 +40,5 @@ jobs:
             - `## Report`: a checklist (✅ / ❌) for each check above, listing concrete issues with file and line,
               or stating the changes look good.
           claude_args: >-
-            --max-turns 10
+            --model claude-sonnet-5-5 --max-turns 10
             --allowedTools "Bash(git diff:*),Bash(git log:*),Bash(gh pr comment:*),Read,Grep,Glob,Write"

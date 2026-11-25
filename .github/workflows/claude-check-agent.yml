@@ -56,5 +56,5 @@ jobs:
               (use ✅ / ❌) and "Suggestions" (prioritized, each with a short concrete rewrite).
             Keep it concise.
           claude_args: >-
-            --max-turns 12
+            --model claude-sonnet-5-5 --max-turns 12
             --allowedTools "Bash(git diff:*),Bash(git log:*),Bash(gh pr comment:*),Read,Grep,Glob,Write"
