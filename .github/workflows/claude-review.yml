@@ -12,14 +12,9 @@ permissions:
 
 jobs:
   review:
-    # Fork PRs get no secrets: only run for same-repo PRs.
-    if: github.event.pull_request.head.repo.full_name == github.repository
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v5
-        with:
-          fetch-depth: 0
-
       - uses: anthropics/claude-code-action@v1
         env:
           GH_TOKEN: ${{ github.token }}
