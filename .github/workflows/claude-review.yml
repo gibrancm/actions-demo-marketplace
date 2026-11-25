@@ -1,0 +1,40 @@
+name: Claude Review
+
+on:
+  push:
+    branches-ignore: [main]
+
+permissions:
+  contents: read
+
+jobs:
+  review:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+
+      # On a new branch `before` is all zeros, so diff against the merge-base with main instead.
+      - name: Resolve base commit
+        id: base
+        run: |
+          BEFORE="${{ github.event.before }}"
+          if [ -z "${BEFORE//0/}" ] || ! git cat-file -e "$BEFORE^{commit}" 2>/dev/null; then
+            BEFORE=$(git merge-base origin/main HEAD)
+          fi
+          echo "sha=$BEFORE" >> "$GITHUB_OUTPUT"
+
+      - uses: anthropics/claude-code-action@v1
+        with:
+          anthropic_api_key: ${{ secrets.ANTHROPIC_API_KEY }}
+          prompt: |
+            Review the changes introduced by this push (${{ steps.base.outputs.sha }}..${{ github.sha }}).
+            Use `git diff ${{ steps.base.outputs.sha }} ${{ github.sha }}` to see them.
+            This repo is a Claude Code plugin marketplace. Check for:
+            - Valid JSON in marketplace.json and plugin.json files, and that every plugin in marketplace.json has a matching plugins/<name> directory
+            - Skills (SKILL.md) and agents (*.md) with correct frontmatter (name, description)
+            - Secrets, tokens, PII or customer data (this repo is public)
+            - README.md and CLAUDE.md out of sync with the plugins
+            Report concrete issues with file and line, or say the changes look good.
+          claude_args: "--max-turns 10 --allowedTools Bash(git diff:*),Bash(git log:*),Read,Grep,Glob"
