@@ -3,8 +3,6 @@ name: Claude Check Agent
 on:
   pull_request:
     types: [opened, synchronize, reopened]
-    paths:
-      - "plugins/*/agents/**"
 
 permissions:
   contents: read
