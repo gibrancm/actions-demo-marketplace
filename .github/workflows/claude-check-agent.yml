@@ -3,30 +3,23 @@ name: Claude Check Agent
 on:
   pull_request:
     types: [opened, synchronize, reopened]
-    paths:
-      - "plugins/*/agents/**"
 
 permissions:
   contents: read
-  pages: write
   id-token: write
   pull-requests: write
 
 jobs:
   check-agent:
-    # Fork PRs get no secrets: only run for same-repo PRs.
-    if: github.event.pull_request.head.repo.full_name == github.repository
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v5
-        with:
-          fetch-depth: 0
-
       - uses: anthropics/claude-code-action@v1
         env:
           GH_TOKEN: ${{ github.token }}
         with:
           anthropic_api_key: ${{ secrets.ANTHROPIC_API_KEY }}
+          github_token: ${{ github.token }}
           prompt: |
             Review the agents added or changed in PR #${{ github.event.pull_request.number }}
             (base ${{ github.event.pull_request.base.sha }}, head ${{ github.event.pull_request.head.sha }}).
@@ -55,6 +48,3 @@ jobs:
             - `## Report`: one `###` subsection per agent with a "Verification" pass/fail checklist
               (use ✅ / ❌) and "Suggestions" (prioritized, each with a short concrete rewrite).
             Keep it concise.
-          claude_args: >-
-            --model claude-sonnet-5-5 --max-turns 12
-            --allowedTools "Bash(git diff:*),Bash(git log:*),Bash(gh pr comment:*),Read,Grep,Glob,Write"
