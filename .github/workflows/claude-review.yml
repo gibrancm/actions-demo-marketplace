@@ -34,7 +34,11 @@ jobs:
             - Secrets, tokens, PII or customer data (this repo is public)
             - README.md and CLAUDE.md out of sync with the plugins
             Post ONE comment on the PR with `gh pr comment ${{ github.event.pull_request.number }} --body-file <file>`
-            (write the body to a temp file first) listing concrete issues with file and line, or saying the changes look good.
+            (write the body to a temp file first). Write the comment in Markdown with this structure:
+            - `## Summary`: 2-4 lines with the overall verdict (looks good / needs changes), the files reviewed,
+              and the number of issues found.
+            - `## Report`: a checklist (✅ / ❌) for each check above, listing concrete issues with file and line,
+              or stating the changes look good.
           claude_args: >-
             --max-turns 10
             --allowedTools "Bash(git diff:*),Bash(git log:*),Bash(gh pr comment:*),Read,Grep,Glob,Write"
