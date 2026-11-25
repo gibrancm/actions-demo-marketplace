@@ -1,40 +1,44 @@
 name: Claude Review
 
+# claude-code-action does not support `push` events, so review on pull requests instead.
 on:
-  push:
-    branches-ignore: [main]
+  pull_request:
+    types: [opened, synchronize, reopened]
 
 permissions:
   contents: read
+  id-token: write
+  pull-requests: write
 
 jobs:
   review:
-    runs-on: self-hosted
+    # Fork PRs get no secrets: only run for same-repo PRs.
+    if: github.event.pull_request.head.repo.full_name == github.repository
+    runs-on: ubuntu-latest
     steps:
-      - uses: actions/checkout@v4
+      - uses: actions/checkout@v5
         with:
           fetch-depth: 0
 
-      # On a new branch `before` is all zeros, so diff against the merge-base with main instead.
-      - name: Resolve base commit
-        id: base
-        run: |
-          BEFORE="${{ github.event.before }}"
-          if [ -z "${BEFORE//0/}" ] || ! git cat-file -e "$BEFORE^{commit}" 2>/dev/null; then
-            BEFORE=$(git merge-base origin/main HEAD)
-          fi
-          echo "sha=$BEFORE" >> "$GITHUB_OUTPUT"
-
       - uses: anthropics/claude-code-action@v1
+        env:
+          GH_TOKEN: ${{ github.token }}
         with:
           anthropic_api_key: ${{ secrets.ANTHROPIC_API_KEY }}
           prompt: |
-            Review the changes introduced by this push (${{ steps.base.outputs.sha }}..${{ github.sha }}).
-            Use `git diff ${{ steps.base.outputs.sha }} ${{ github.sha }}` to see them.
+            Review PR #${{ github.event.pull_request.number }} (${{ github.event.pull_request.base.sha }}..${{ github.event.pull_request.head.sha }}).
+            Use `git diff ${{ github.event.pull_request.base.sha }} ${{ github.event.pull_request.head.sha }}` to see the changes.
             This repo is a Claude Code plugin marketplace. Check for:
             - Valid JSON in marketplace.json and plugin.json files, and that every plugin in marketplace.json has a matching plugins/<name> directory
             - Skills (SKILL.md) and agents (*.md) with correct frontmatter (name, description)
             - Secrets, tokens, PII or customer data (this repo is public)
             - README.md and CLAUDE.md out of sync with the plugins
-            Report concrete issues with file and line, or say the changes look good.
-          claude_args: "--max-turns 10 --allowedTools Bash(git diff:*),Bash(git log:*),Read,Grep,Glob"
+            Post ONE comment on the PR with `gh pr comment ${{ github.event.pull_request.number }} --body-file <file>`
+            (write the body to a temp file first). Write the comment in Markdown with this structure:
+            - `## Summary`: 2-4 lines with the overall verdict (looks good / needs changes), the files reviewed,
+              and the number of issues found.
+            - `## Report`: a checklist (✅ / ❌) for each check above, listing concrete issues with file and line,
+              or stating the changes look good.
+          claude_args: >-
+            --max-turns 10
+            --allowedTools "Bash(git diff:*),Bash(git log:*),Bash(gh pr comment:*),Read,Grep,Glob,Write"

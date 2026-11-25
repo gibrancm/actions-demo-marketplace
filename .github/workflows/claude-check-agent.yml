@@ -8,15 +8,17 @@ on:
 
 permissions:
   contents: read
+  pages: write
+  id-token: write
   pull-requests: write
 
 jobs:
   check-agent:
-    # Fork PRs get no secrets, and this job runs on a self-hosted runner: only run for same-repo PRs.
+    # Fork PRs get no secrets: only run for same-repo PRs.
     if: github.event.pull_request.head.repo.full_name == github.repository
-    runs-on: self-hosted
+    runs-on: ubuntu-latest
     steps:
-      - uses: actions/checkout@v4
+      - uses: actions/checkout@v5
         with:
           fetch-depth: 0
 
@@ -47,8 +49,12 @@ jobs:
             - Replace demo content with real behavior if the agent is still a placeholder
 
             REPORT: post ONE comment on the PR with `gh pr comment ${{ github.event.pull_request.number }} --body-file <file>`
-            (write the body to a temp file first). Use two sections per agent, "Verification" (pass/fail checklist)
-            and "Suggestions" (prioritized, each with a short concrete rewrite). Keep it concise.
+            (write the body to a temp file first). Write the comment in Markdown with this structure:
+            - `## Summary`: 2-4 lines with the overall verdict (pass / needs changes), the agents reviewed,
+              and counts of checks passed, checks failed and suggestions.
+            - `## Report`: one `###` subsection per agent with a "Verification" pass/fail checklist
+              (use ✅ / ❌) and "Suggestions" (prioritized, each with a short concrete rewrite).
+            Keep it concise.
           claude_args: >-
             --max-turns 12
             --allowedTools "Bash(git diff:*),Bash(git log:*),Bash(gh pr comment:*),Read,Grep,Glob,Write"

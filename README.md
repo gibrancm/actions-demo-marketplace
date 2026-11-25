@@ -6,7 +6,7 @@ Claude Code plugin marketplace (`upper-funnel-marketplace`) with three demo plug
 |----------|----------------|---------------|
 | `baui`   | `baui-hello`   | `baui-demo`   |
 | `dap`    | `dap-hello`    | `dap-demo`    |
-| `common` | `common-hello` | `common-demo` |
+| `common` | `common-hello` | `common-demo`, `common-weather` |
 
 ## Layout
 
