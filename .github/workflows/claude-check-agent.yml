@@ -12,9 +12,9 @@ permissions:
 
 jobs:
   check-agent:
-    # Fork PRs get no secrets, and this job runs on a self-hosted runner: only run for same-repo PRs.
+    # Fork PRs get no secrets: only run for same-repo PRs.
     if: github.event.pull_request.head.repo.full_name == github.repository
-    runs-on: self-hosted
+    runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4
         with:
