@@ -1,0 +1,27 @@
+{
+  "name": "upper-funnel-marketplace",
+  "owner": {
+    "name": "Upper Funnel AI"
+  },
+  "metadata": {
+    "description": "Demo marketplace with baui, dap and common plugins",
+    "version": "0.1.0"
+  },
+  "plugins": [
+    {
+      "name": "baui",
+      "source": "./plugins/baui",
+      "description": "BAUI demo plugin with a skill and an agent"
+    },
+    {
+      "name": "dap",
+      "source": "./plugins/dap",
+      "description": "DAP demo plugin with a skill and an agent"
+    },
+    {
+      "name": "common",
+      "source": "./plugins/common",
+      "description": "Shared/common demo plugin with a skill and an agent"
+    }
+  ]
+}
