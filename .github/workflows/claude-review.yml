@@ -36,4 +36,3 @@ jobs:
             - `## Report`: a checklist (✅ / ❌) for each check above, listing concrete issues with file and line,
               or stating the changes look good.
           claude_args: >-
-            --allowedTools "Bash(git diff:*),Bash(git log:*),Bash(gh pr comment:*),Read,Grep,Glob,Write"

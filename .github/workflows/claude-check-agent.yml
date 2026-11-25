@@ -48,5 +48,3 @@ jobs:
             - `## Report`: one `###` subsection per agent with a "Verification" pass/fail checklist
               (use ✅ / ❌) and "Suggestions" (prioritized, each with a short concrete rewrite).
             Keep it concise.
-          claude_args: >-
-            --allowedTools "Bash(git diff:*),Bash(git log:*),Bash(gh pr comment:*),Read,Grep,Glob,Write"
