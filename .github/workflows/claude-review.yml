@@ -25,6 +25,7 @@ jobs:
           GH_TOKEN: ${{ github.token }}
         with:
           anthropic_api_key: ${{ secrets.ANTHROPIC_API_KEY }}
+          github_token: ${{ github.token }}
           prompt: |
             Review PR #${{ github.event.pull_request.number }} (${{ github.event.pull_request.base.sha }}..${{ github.event.pull_request.head.sha }}).
             Use `git diff ${{ github.event.pull_request.base.sha }} ${{ github.event.pull_request.head.sha }}` to see the changes.
