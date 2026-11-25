@@ -1,5 +1,5 @@
 {
   "name": "common",
   "description": "Shared/common demo plugin with a skill and an agent",
-  "version": "0.1.0"
+  "version": "0.1.1"
 }
